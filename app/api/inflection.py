@@ -36,19 +36,19 @@ def data_list():
         if data is None:
             return jsonify({"information": {}}), 201
         definite_increase = "Null"
-        if data.newdefinite is not None and data.definite is not None:
+        if data.newdefinite != 0 and data.definite != data.newdefinite:
             definite_increase = float(data.newdefinite) / float(data.definite-data.newdefinite) * 100
             definite_increase = str(definite_increase) + "%"
         suspected_increase = "Null"
-        if data.newsuspected is not None and data.suspected is not None:
+        if data.newsuspected != 0 and data.suspected != data.newsuspected:
             suspected_increase = float(data.newsuspected) / float(data.suspected - data.newsuspected) * 100
             suspected_increase = str(definite_increase) + "%"
         death_increase = "Null"
-        if data.newdeath is not None and data.death is not None:
+        if data.newdeath != 0 and data.death != data.newdeath:
             death_increase = float(data.newdeath) / float(data.death - data.newdeath) * 100
             death_increase = str(death_increase) + "%"
         cured_increase = "Null"
-        if data.newcured is not None and data.cured is not None:
+        if data.newcured != 0 and data.cured != data.newcured:
             cured_increase = float(data.newcured) / float(data.cured - data.newcured) * 100
             cured_increase = str(cured_increase) + "%"
         information = {"date": data.date,
