@@ -6,7 +6,7 @@ from app import db
 from app.models import Inflection
 from flask import jsonify, request, Response
 
-
+'''
 @api.route('/inflection/', methods=['POST'])
 # @User.token_check(0)
 def new_data():
@@ -26,7 +26,7 @@ def new_data():
         db.session.add(feed)
         db.session.commit()
         return jsonify({"msg": "information add successful!"}), 200
-
+'''
 
 @api.route('/inflection/information/', methods=['POST'])
 def data_list():
@@ -35,6 +35,10 @@ def data_list():
         data = Inflection.query.filter_by(date=date).first()
         if data is None:
             return jsonify({"information": {}}), 201
+        definite_increase = "Null"
+        if data.newdefinite is not None and data.definite is not None:
+            definite_increase = (float)data.newdefinite / (float)(data.definite-data.newdefinite) * 100
+            definite_increase = (str)definite_increase + "%"
         information = {"date": data.date,
                        "total": data.total,
                        "definite": data.definite,
@@ -42,6 +46,7 @@ def data_list():
                        "death": data.death,
                        "cured": data.cured,
                        "newdefinite": data.newdefinite,
+                       "definite_increase": definite_increase,
                        "newdeath": data.newdeath,
                        "newsuspected": data.newsuspected,
                        "newcured": data.newcured,
