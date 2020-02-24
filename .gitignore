@@ -1,0 +1,5 @@
+*.pyc
+*.swp
+chromedriver
+venv
+celerybeat-schedule 
