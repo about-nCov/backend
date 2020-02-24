@@ -38,19 +38,19 @@ def data_list():
         definite_increase = "Null"
         if data.newdefinite != 0 and data.definite != data.newdefinite:
             definite_increase = float(data.newdefinite) / float(data.definite-data.newdefinite) * 100
-            definite_increase = str(definite_increase) + "%"
+            definite_increase = str(format(definite_increase, '.1f')) + "%"
         suspected_increase = "Null"
         if data.newsuspected != 0 and data.suspected != data.newsuspected:
             suspected_increase = float(data.newsuspected) / float(data.suspected - data.newsuspected) * 100
-            suspected_increase = str(definite_increase) + "%"
+            suspected_increase = str(format(suspected_increase, '.1f')) + "%"
         death_increase = "Null"
         if data.newdeath != 0 and data.death != data.newdeath:
             death_increase = float(data.newdeath) / float(data.death - data.newdeath) * 100
-            death_increase = str(death_increase) + "%"
+            death_increase = str(format(death_increase, '.1f')) + "%"
         cured_increase = "Null"
         if data.newcured != 0 and data.cured != data.newcured:
             cured_increase = float(data.newcured) / float(data.cured - data.newcured) * 100
-            cured_increase = str(cured_increase) + "%"
+            cured_increase = str(format(cured_increase, '.1f')) + "%"
         information = {"date": data.date,
                        "total": data.total,
                        "definite": data.definite,
