@@ -33,6 +33,8 @@ def data_list():
     if request.method == 'POST':
         date = request.get_json().get("date")
         data = Inflection.query.filter_by(date=date).first()
+        if data is None:
+            return jsonify({"information": {}}), 201
         information = {"date": data.date,
                        "total": data.total,
                        "definite": data.definite,
