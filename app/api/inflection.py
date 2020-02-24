@@ -6,7 +6,7 @@ from app import db
 from app.models import Inflection
 from flask import jsonify, request, Response
 
-'''
+
 @api.route('/inflection/', methods=['POST'])
 # @User.token_check(0)
 def new_data():
@@ -26,7 +26,7 @@ def new_data():
         db.session.add(feed)
         db.session.commit()
         return jsonify({"msg": "information add successful!"}), 200
-'''
+
 
 @api.route('/inflection/information/', methods=['POST'])
 def data_list():
