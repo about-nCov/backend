@@ -3,7 +3,7 @@ import json
 import time
 from . import api
 from app import db
-from app.models import Inflection
+from app.models import Inflection, Area
 from flask import jsonify, request, Response
 
 
@@ -29,7 +29,7 @@ def new_data():
 
 
 @api.route('/inflection/information/', methods=['POST'])
-def data_list():
+def daily_information():
     if request.method == 'POST':
         date = request.get_json().get("date")
         data = Inflection.query.filter_by(date=date).first()
@@ -65,5 +65,27 @@ def data_list():
                        "suspected_increase": suspected_increase,
                        "newcured": data.newcured,
                        "cured_increase": cured_increase
+                       }
+        return jsonify({"information": information}), 200
+
+
+@api.route('/inflection/area/', methods=['POST'])
+def area_information():
+    if request.method == 'POST':
+        date = request.get_json().get("date")
+        country = request.get_json().get("country")
+        if country == "":
+            country = "中国"
+        province = request.get_json().get("province")
+        data = Area.query.filter_by(date=date, country=country, province=province).first()
+        if data is None:
+            return jsonify({"information": {}}), 201
+        information = {"date": data.date,
+                       "country": data.country,
+                       "province": data.province,
+                       "definite": data.definite,
+                       "suspected": data.suspected,
+                       "death": data.death,
+                       "cured": data.cured,
                        }
         return jsonify({"information": information}), 200
