@@ -5,7 +5,7 @@ from . import api
 from app import db
 from app.models import Inflection, Area, Trip
 from flask import jsonify, request, Response
-from flask_sqlalchemy import or_
+from sqlalchemy import or_
 
 
 @api.route('/inflection/', methods=['POST'])
@@ -99,27 +99,35 @@ def trip_information():
         country = request.get_json().get("country")
         province = request.get_json().get("province")
         city = request.get_json().get('city')
-        data = Trip.query.filter_by(tripDate=date).filter(
-            or_(tripDepcou=country, tripArrcou=country)).filter(
-            or_(tripDeppro=province, tripArrpro=province).filter(
-                or_(tripDepcity=city, tripArrpro=city))
+        datas = Trip.query.filter_by(tripDate=date).filter(
+            or_(Trip.tripDepcou.like("%" +country+ "%"), 
+                Trip.tripArrcou.like("%" +country+ "%"))
+            ).filter(
+            or_(Trip.tripDeppro.like("%" +province+ "%"),
+                Trip.tripArrpro.like("%" +province+ "%"))
+            ).filter(
+            or_(Trip.tripDepcity.like("%" +city+ "%"), 
+                Trip.tripArrpro.like("%" +city+ "%"))
         ).all()
-        if data is None:
+        if datas is None:
             return jsonify({"information": {}}), 201
-        information = {"date": data.tripDate,
-                       "type": data.tripType,
-                       "tripNo": data.tripNo,
-                       "tripDepName": data.tripDepname,
-                       "tripArrName": data.tripArrname,
-                       "depCountry": data.tripDepcou,
-                       "arrCountry": data.tripArrcou,
-                       "depProvince": data.tripDeppro,
-                       "arrProvince": data.tripArrpro,
-                       "depCity": data.tripDepcity,
-                       "arrCity": data.tripArrcity,
-                       "publishTime": data.publishtime,
-                       "link": data.link,
-                       "publisher": data.publisher,
-                       "carriage": data.carriage,
-                       }
-        return jsonify({"information": information}), 200
+        information_list = []
+        for data in datas:
+            information = {"date": data.tripDate,
+                           "type": data.tripType,
+                           "tripNo": data.tripNo,
+                           "tripDepName": data.tripDepname,
+                           "tripArrName": data.tripArrname,
+                           "depCountry": data.tripDepcou,
+                           "arrCountry": data.tripArrcou,
+                           "depProvince": data.tripDeppro,
+                           "arrProvince": data.tripArrpro,
+                           "depCity": data.tripDepcity,
+                           "arrCity": data.tripArrcity,
+                           "publishTime": data.publishtime,
+                           "link": data.link,
+                           "publisher": data.publisher,
+                           "carriage": data.carriage,
+                           }
+            information_list.append(information)
+        return jsonify({"information_list": information_list}), 200
