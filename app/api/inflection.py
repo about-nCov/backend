@@ -3,8 +3,9 @@ import json
 import time
 from . import api
 from app import db
-from app.models import Inflection, Area
+from app.models import Inflection, Area, Trip
 from flask import jsonify, request, Response
+from flask_sqlalchemy import or_
 
 
 @api.route('/inflection/', methods=['POST'])
@@ -37,7 +38,7 @@ def daily_information():
             return jsonify({"information": {}}), 201
         definite_increase = "Null"
         if data.newdefinite != 0 and data.definite != data.newdefinite:
-            definite_increase = float(data.newdefinite) / float(data.definite-data.newdefinite) * 100
+            definite_increase = float(data.newdefinite) / float(data.definite - data.newdefinite) * 100
             definite_increase = str(format(definite_increase, '.1f')) + "%"
         suspected_increase = "Null"
         if data.newsuspected != 0 and data.suspected != data.newsuspected:
@@ -87,5 +88,38 @@ def area_information():
                        "suspected": data.suspected,
                        "death": data.death,
                        "cured": data.cured,
+                       }
+        return jsonify({"information": information}), 200
+
+
+@api.route('/inflection/trip/', methods=['POST'])
+def trip_information():
+    if request.method == 'POST':
+        date = request.get_json().get("date")
+        country = request.get_json().get("country")
+        province = request.get_json().get("province")
+        city = request.get_json().get('city')
+        data = Trip.query.filter_by(tripDate=date).filter(
+            or_(tripDepcou=country, tripArrcou=country)).filter(
+            or_(tripDeppro=province, tripArrpro=province).filter(
+                or_(tripDepcity=city, tripArrpro=city))
+        ).all()
+        if data is None:
+            return jsonify({"information": {}}), 201
+        information = {"date": data.tripDate,
+                       "type": data.tripType,
+                       "tripNo": data.tripNo,
+                       "tripDepName": data.tripDepname,
+                       "tripArrName": data.tripArrname,
+                       "depCountry": data.tripDepcou,
+                       "arrCountry": data.tripArrcou,
+                       "depProvince": data.tripDeppro,
+                       "arrProvince": data.tripArrpro,
+                       "depCity": data.tripDepcity,
+                       "arrCity": data.tripArrcity,
+                       "publishTime": data.publishtime,
+                       "link": data.link,
+                       "publisher": data.publisher,
+                       "carriage": data.carriage,
                        }
         return jsonify({"information": information}), 200
