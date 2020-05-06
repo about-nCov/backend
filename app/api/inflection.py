@@ -78,7 +78,22 @@ def area_information():
         if country == "":
             country = "中国"
         province = request.get_json().get("province")
-        data = Area.query.filter_by(date=date, country=country, province=province).first()
+        information_list = []
+        if province != "":
+            data = Area.query.filter_by(date=date, country=country, province=province).first()
+        else:
+            all_data = Area.query.filter_by(date=date, country=country).all()
+            for data in all_data: 
+                information = {"date": data.date,
+                               "country": data.country,
+                               "province": data.province,
+                               "definite": data.definite,
+                               "suspected": data.suspected,
+                               "death": data.death,
+                               "cured": data.cured,
+                               }
+                information_list.append(information)
+            return jsonify({"information_list":information_list}),200
         if data is None:
             return jsonify({"information": {}}), 201
         information = {"date": data.date,
@@ -89,7 +104,8 @@ def area_information():
                        "death": data.death,
                        "cured": data.cured,
                        }
-        return jsonify({"information": information}), 200
+        information_list.append(information)
+        return jsonify({"information": information_list}), 200
 
 
 @api.route('/inflection/trip/', methods=['POST'])
