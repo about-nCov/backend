@@ -147,3 +147,65 @@ def trip_information():
                            }
             information_list.append(information)
         return jsonify({"information_list": information_list}), 200
+
+@api.route('/inflection/trip/ll/', methods=['POST'])
+def trip_information_ll():
+    if request.method == 'POST': 
+        date = request.get_json().get("date")
+        country = request.get_json().get("country")
+        province = request.get_json().get("province")
+        datas = Trip.query.filter_by(tripDate=date).filter(
+            or_(Trip.tripDepcou.like("%" +country+ "%"), 
+                Trip.tripArrcou.like("%" +country+ "%"))
+            ).filter(
+            or_(Trip.tripDeppro.like("%" +province+ "%"),
+                Trip.tripArrpro.like("%" +province+ "%"))
+            ).all()
+        if datas is None:
+            return jsonify({"information": []}), 201
+        information_list = []
+        for data in datas:
+            if data.tripDeppro and data.tripArrpro:
+                information = {"fromName": data.tripDeppro,
+                               "toName": data.tripArrpro,
+                               "coords":[
+                                    en_dict[data.tripDeppro],
+                                    en_dict[data.tripArrpro]
+                                ]}
+
+                if (information not in information_list) and information.fromName != information.toName:
+                    information_list.append(information)
+        return jsonify({"imformation_list": information_list}), 200
+
+
+@api.route('/inflection/trip/province/', methods=['POST'])
+def trip_information_province():
+    if request.method == 'POST': 
+        date = request.get_json().get("date")
+        country = request.get_json().get("country")
+        province = request.get_json().get("province")
+        datas = Trip.query.filter_by(tripDate=date).filter(Trip.tripDeppro==Trip.tripArrpro).all()
+        if datas is None:
+            return jsonify({"information": []}), 201
+        information_list = []
+        information_dict = {}
+        for data in datas:
+            if data.tripDeppro in information_dict:
+                information_dict[data.tripDeppro] += 1
+            elif data.tripDepcity in information_dict:
+                information_dict[data.tripDepcity] += 1
+            else:
+                if data.tripDeppro:
+                    information_dict[data.tripDeppro] = 1 
+                else:
+                    information_dict[data.tripDepcity] = 1
+        for key, value in information_dict.items():
+            information = {"province":key,
+                           "coords":en_dict[key],
+                           "count":value
+                    }
+            information_list.append(information)
+        return jsonify({"imformation_list": information_list}), 200
+
+
+en_dict = {'安徽': ['31.5', '117.17'], '澳门': ['21.3', '115.07'], '北京': ['39.5', '116.24'], '福建': ['26.0', '119.18'], '甘肃': ['36.0', '103.51'], '广东': ['23.0', '113.14'], '广西': ['22.4', '108.19'], '贵州': ['26.3', '106.42'], '海南': ['20.0', '110.20'], '河北': ['38.0', '114.30'], '河南': ['34.4', '11340'], '黑龙江': ['45.4', '126.36'], '湖北':['30.3', '114.17'], '湖南': ['28.1', '112.59'], '吉林': ['43.5', '125.19'], '江苏': ['32.0', '118.46'], '江西': ['28.4', '115.55'], '辽宁': ['41.4', '123.25'], '内蒙古': ['40.4', '111.41'], '宁夏': ['38.2', '106.16'], '青海': ['36.3', '101.48'], '山东': ['36.4', '117.00'], '山西': ['37.5', '112.33'], '陕西': ['34.1', '108.57'], '上海': ['31.1', '121.29'], '四川': ['30.4', '104.04'], '台湾': ['25.0', '121.30'], '天津': ['39.0', '117.12'], '西藏': ['29.3', '91.08'], '香港': ['21.2', '115.12'], '新疆': ['43.4', '87.36'], '云南': ['25.0', '102.42'], '浙江': ['30.1', '120.10'], '重庆': ['29.3', '106.33']}
