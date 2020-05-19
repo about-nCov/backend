@@ -155,8 +155,10 @@ def trip_information_ll():
         country = request.get_json().get("country")
         province = request.get_json().get("province")
         datas = Trip.query.filter_by(tripDate=date).filter(
-            or_(Trip.tripDepcou.like("%" +country+ "%"), 
-                Trip.tripArrcou.like("%" +country+ "%"))
+                Trip.tripDeppro != Trip.tripArrpro
+                ).filter(Trip.tripDepcity != Trip.tripArrcity
+                ).filter(Trip.tripDepcou.like("%" +country+ "%")
+                ).filter(Trip.tripArrcou.like("%" +country+ "%")
             ).filter(
             or_(Trip.tripDeppro.like("%" +province+ "%"),
                 Trip.tripArrpro.like("%" +province+ "%"))
@@ -172,8 +174,7 @@ def trip_information_ll():
                                     en_dict[data.tripDeppro],
                                     en_dict[data.tripArrpro]
                                 ]}
-
-                if (information not in information_list) and information.fromName != information.toName:
+                if information not in information_list:
                     information_list.append(information)
         return jsonify({"imformation_list": information_list}), 200
 
