@@ -152,8 +152,8 @@ def trip_information():
 def trip_information_ll():
     if request.method == 'POST': 
         date = request.get_json().get("date")
-        country = request.get_json().get("country")
         province = request.get_json().get("province")
+        country = ""
         datas = Trip.query.filter_by(tripDate=date).filter(
                 Trip.tripDeppro != Trip.tripArrpro
                 ).filter(Trip.tripDepcity != Trip.tripArrcity
