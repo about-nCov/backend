@@ -123,7 +123,7 @@ def trip_information():
                 Trip.tripArrpro.like("%" +province+ "%"))
             ).filter(
             or_(Trip.tripDepcity.like("%" +city+ "%"), 
-                Trip.tripArrpro.like("%" +city+ "%"))
+                Trip.tripArrcity.like("%" +city+ "%"))
         ).all()
         if datas is None:
             return jsonify({"information": {}}), 201
@@ -161,21 +161,30 @@ def trip_information_ll():
                 ).filter(Trip.tripArrcou.like("%" +country+ "%")
             ).filter(
             or_(Trip.tripDeppro.like("%" +province+ "%"),
-                Trip.tripArrpro.like("%" +province+ "%"))
+                Trip.tripArrpro.like("%" +province+ "%"),
+                Trip.tripDepcity.like("%" +province+ "%"),
+                Trip.tripArrcity.like("%" +province+ "%"))
             ).all()
         if datas is None:
             return jsonify({"information": []}), 201
         information_list = []
         for data in datas:
-            if data.tripDeppro and data.tripArrpro:
-                information = {"fromName": data.tripDeppro,
-                               "toName": data.tripArrpro,
-                               "coords":[
-                                    en_dict[data.tripDeppro],
-                                    en_dict[data.tripArrpro]
-                                ]}
-                if information not in information_list:
-                    information_list.append(information)
+            if data.tripDeppro:
+                fromName = data.tripDeppro
+            else:
+                fromName = data.tripDepcity
+            if data.tripArrpro:
+                toName = data.tripArrpro
+            else:
+                toName = data.tripArrcity
+            information = {"fromName": fromName,
+                           "toName": toName,
+                           "coords":[
+                                en_dict[fromName],
+                                en_dict[toName]
+                            ]}
+            if information not in information_list:
+                information_list.append(information)
         return jsonify({"imformation_list": information_list}), 200
 
 
@@ -183,9 +192,10 @@ def trip_information_ll():
 def trip_information_province():
     if request.method == 'POST': 
         date = request.get_json().get("date")
-        country = request.get_json().get("country")
-        province = request.get_json().get("province")
-        datas = Trip.query.filter_by(tripDate=date).filter(Trip.tripDeppro==Trip.tripArrpro).all()
+        datas = Trip.query.filter_by(tripDate=date).filter(
+                or_(Trip.tripDeppro==Trip.tripArrpro,
+                Trip.tripDepcity==Trip.tripArrcity)
+                ).all()
         if datas is None:
             return jsonify({"information": []}), 201
         information_list = []
