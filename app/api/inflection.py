@@ -3,7 +3,7 @@ import json
 import time
 from . import api
 from app import db
-from app.models import Inflection, Area, Trip
+from app.models import Inflection, Area, Trip, Weibo
 from flask import jsonify, request, Response
 from sqlalchemy import or_
 
@@ -126,7 +126,7 @@ def trip_information():
                 Trip.tripArrcity.like("%" +city+ "%"))
         ).all()
         if datas is None:
-            return jsonify({"information": {}}), 201
+            return jsonify({"information_list": {}}), 201
         information_list = []
         for data in datas:
             information = {"date": data.tripDate,
@@ -166,7 +166,7 @@ def trip_information_ll():
                 Trip.tripArrcity.like("%" +province+ "%"))
             ).all()
         if datas is None:
-            return jsonify({"information": []}), 201
+            return jsonify({"information_list": []}), 201
         information_list = []
         for data in datas:
             if data.tripDeppro:
@@ -187,6 +187,20 @@ def trip_information_ll():
                 information_list.append(information)
         return jsonify({"imformation_list": information_list}), 200
 
+@api.route('/inflection/weibo/proportion/', methods=['GET'])
+def weibo_proportion():
+    if request.method == "GET":
+        date = request.get_json().get('date')
+        data = Weibo.query.filter_by(date=date).first() 
+        if data is None:
+            return jsonify({"information":[]}),201
+        information = {
+                "hotrank":data.hotrank,
+                "inflection":data.inflection,
+                "proportion":data.proportion,
+                }
+        return jsonify({"information":information}),200
+
 
 @api.route('/inflection/trip/province/', methods=['POST'])
 def trip_information_province():
@@ -197,7 +211,7 @@ def trip_information_province():
                 Trip.tripDepcity==Trip.tripArrcity)
                 ).all()
         if datas is None:
-            return jsonify({"information": []}), 201
+            return jsonify({"information_list": []}), 201
         information_list = []
         information_dict = {}
         for data in datas:

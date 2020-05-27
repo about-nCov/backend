@@ -60,4 +60,11 @@ class Trip(db.Model):
     createtime = db.Column(db.String(20))
     updatetime = db.Column(db.String(20))
 
+class Weibo(db.Model):
+    __Tablename__ = 'weibo'
+    id = db.Column(db.Integer, primary_key=True)
+    hotrank = db.Column(db.Integer)
+    inflection = db.Column(db.Integer)
+    proportion = db.Column(db.Float)
+    date = db.Column(db.String(20))
 
