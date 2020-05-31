@@ -3,4 +3,4 @@ from flask import Blueprint
 
 api = Blueprint('api', __name__)
 
-from . import inflection
+from . import inflection, trip, area, weibo
