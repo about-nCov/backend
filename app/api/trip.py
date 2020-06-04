@@ -98,6 +98,8 @@ def trip_information_ll():
                 toName = data.tripArrpro
             else:
                 toName = data.tripArrcity
+            if not toName or not fromName:
+                continue
             information = {"fromName": fromName,
                            "toName": toName,
                            "coords":[
