@@ -68,3 +68,10 @@ class Weibo(db.Model):
     proportion = db.Column(db.Float)
     date = db.Column(db.String(20))
 
+class FakeNews(db.Model):
+    __Tablename__ = 'fake_news'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(50))
+    mainSummary = db.Column(db.Text)
+    body = db.Column(db.Text)
+    time = db.Column(db.Date)
