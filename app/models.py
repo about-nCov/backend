@@ -75,3 +75,13 @@ class FakeNews(db.Model):
     mainSummary = db.Column(db.Text)
     body = db.Column(db.Text)
     time = db.Column(db.Date)
+
+class World(db.Model):
+    __Tablename__ = 'world'
+    id = db.Column(db.Integer, primary_key=True)
+    continentName = db.Column(db.String(10))
+    countryName = db.Column(db.String(10))
+    confirmedCount = db.Column(db.Integer)
+    curedCount = db.Column(db.Integer)
+    deadCount = db.Column(db.Integer)
+    updateTime = db.Column(db.Date)

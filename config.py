@@ -2,7 +2,7 @@
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-host = "127.0.0.1"#os.getenv("mysqlhost")
+host = os.getenv("mysqlhost")
 password = os.getenv("mysqlpassword")
 
 
